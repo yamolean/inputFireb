@@ -33,12 +33,37 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
     }
 
     @IBAction func didTapRegisterButton(_ sender: Any) {
+        // サインインしていない場合のエラー処理,ログインユーザを取得Auth.auth().currentUser
+        guard let user = Auth.auth().currentUser else {
+            return
+        }
+        // Viewで選択されたもん
+        let favoriteMeal = FavoriteMeal.items[favoriteMealSegment.selectedSegmentIndex].rawValue
+        let favoriteSports = FavoriteSports.items[favoriteSportsSegment.selectedSegmentIndex].rawValue
+        let yourPet = YourPet.items[yourPetSegment.selectedSegmentIndex].rawValue
+        let breakfastEverday = breakfastEverdaySwitch.isOn
+         
+        //Firestoreオブジェクト
+        let db = Firestore.firestore()
         
+        // usersコレクションに対してアクセス .collection("users")
+        // ドキュメントを抽象化した参照オブジェクトを取得 .document(user.uid)
+        // Firestoreデータベースに実際にデータを渡す .setData
+        // 辞書型で渡す
+        db.collection("users").document(user.uid).setData([
+            "favoriteMeal": favoriteMeal,
+            "favoriteSports": favoriteSports,
+            "yourPet": yourPet,
+            "breakfastEverday": breakfastEverday,
+        ]) { error in
+            if let error = error {
+                return
+            }
+            
+        }
     }
-    
 }
 
